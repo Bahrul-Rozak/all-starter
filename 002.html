@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Builder Pro - Template Modern</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 25px;
+        }
+
+        /* Editor Panel */
+        .editor-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            height: fit-content;
+            max-height: 95vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .editor-panel h2 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 18px;
+            border: none;
+            background: #f1f5f9;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .item-list {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .item-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            position: relative;
+            border-left: 4px solid var(--primary-color, #667eea);
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .item-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-edit { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-delete { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        
+        .btn-add { 
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Color Customization */
+        .color-customization {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .color-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .color-picker-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .color-picker-item label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 12px;
+        }
+
+        .color-picker-item input[type="color"] {
+            width: 100%;
+            height: 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* CV Preview */
+        .cv-preview {
+            background: transparent;
+            border-radius: 20px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .cv-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        /* Print Styles */
+        @media print {
+            body { 
+                background: white; 
+                padding: 0;
+            }
+            .container { 
+                display: block; 
+                max-width: 100%;
+            }
+            .editor-panel, .tabs, .btn-add, .item-actions, .btn-icon, .color-customization {
+                display: none !important;
+            }
+            .cv-preview {
+                position: static;
+                box-shadow: none;
+            }
+            .cv-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+        }
+
+        /* Template 2 Styles - Modern Card Style */
+        .cv-template-2 {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --bg-color: #ffffff;
+            --text-color: #1e293b;
+        }
+
+        .cv-header-2 {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cv-header-2::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+
+        .cv-name-2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cv-title-2 {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cv-contact-2 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-item-2 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .contact-item-2 i {
+            width: 16px;
+        }
+
+        .cv-body-2 {
+            padding: 30px;
+            background: var(--bg-color);
+        }
+
+        .section-2 {
+            margin-bottom: 25px;
+        }
+
+        .section-title-2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .section-title-2 i {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .section-title-2 span {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--text-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-text-2 {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #475569;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .experience-item-2, .education-item-2 {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .exp-header-2, .edu-header-2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .exp-title-2 {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        .exp-company-2 {
+            font-weight: 600;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .exp-date-2 {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .exp-description-2 {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .skills-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .skill-item-2 {
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .skill-item-2 i {
+            color: var(--primary-color);
+        }
+
+        .tools-cloud-2 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tool-item-2 {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .additional-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .additional-item-2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .additional-item-2 i {
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn-save, .btn-print {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-save:hover, .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Editor Panel -->
+        <div class="editor-panel">
+            <h2><i class="fas fa-magic" style="margin-right: 10px;"></i>CV Builder Pro</h2>
+            
+            <!-- Color Customization -->
+            <div class="color-customization">
+                <h3 style="margin-bottom: 15px; color: #1e293b;">🎨 Custom Colors</h3>
+                <div class="color-row">
+                    <div class="color-picker-item">
+                        <label>Primary Color</label>
+                        <input type="color" id="primaryColor" value="#667eea">
+                    </div>
+                    <div class="color-picker-item">
+                        <label>Secondary Color</label>
+                        <input type="color" id="secondaryColor" value="#764ba2">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <div class="color-picker-item">
+                        <label>Background Color</label>
+                        <input type="color" id="bgColor" value="#ffffff">
+                    </div>
+                    <div class="color-picker-item">
+                        <label>Text Color</label>
+                        <input type="color" id="textColor" value="#1e293b">
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="personal"><i class="fas fa-user"></i> Personal</button>
+                <button class="tab-btn" data-tab="summary"><i class="fas fa-file-alt"></i> Summary</button>
+                <button class="tab-btn" data-tab="experience"><i class="fas fa-briefcase"></i> Pengalaman</button>
+                <button class="tab-btn" data-tab="education"><i class="fas fa-graduation-cap"></i> Pendidikan</button>
+                <button class="tab-btn" data-tab="skills"><i class="fas fa-cog"></i> Skills</button>
+                <button class="tab-btn" data-tab="additional"><i class="fas fa-plus-circle"></i> Tambahan</button>
+            </div>
+
+            <!-- Personal Tab -->
+            <div class="tab-content active" id="personal-tab">
+                <h3 style="margin-bottom: 15px; color: #1e293b;">Data Diri</h3>
+                <div class="form-group">
+                    <label><i class="fas fa-user-circle"></i> Nama Lengkap</label>
+                    <input type="text" id="fullName" placeholder="John Doe" value="John Doe">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Nomor Telepon</label>
+                    <input type="text" id="phone" placeholder="+62 812 3456 7890" value="+62 812 3456 7890">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="email" placeholder="john.doe@email.com" value="john.doe@email.com">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Domisili</label>
+                    <input type="text" id="location" placeholder="Jakarta" value="Jakarta">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-briefcase"></i> Profesi/Jabatan</label>
+                    <input type="text" id="profession" placeholder="Web Developer" value="Senior Web Developer">
+                </div>
+            </div>
+
+            <!-- Summary Tab -->
+            <div class="tab-content" id="summary-tab">
+                <h3 style="margin-bottom: 15px; color: #1e293b;">Ringkasan Profil</h3>
+                <div class="form-group">
+                    <textarea id="summary" rows="5">Profesional IT dengan 5+ tahun pengalaman dalam pengembangan web dan manajemen proyek. Terampil dalam berbagai teknologi modern dan memiliki kemampuan analisis yang baik. Berkomitmen untuk memberikan solusi inovatif dan efisien.</textarea>
+                </div>
+            </div>
+
+            <!-- Experience Tab -->
+            <div class="tab-content" id="experience-tab">
+                <h3 style="margin-bottom: 15px; color: #1e293b;">Pengalaman Kerja</h3>
+                <div id="experience-list" class="item-list"></div>
+                <button class="btn-add" onclick="addExperience()"><i class="fas fa-plus-circle"></i> Tambah Pengalaman</button>
+            </div>
+
+            <!-- Education Tab -->
+            <div class="tab-content" id="education-tab">
+                <h3 style="margin-bottom: 15px; color: #1e293b;">Pendidikan</h3>
+                <div id="education-list" class="item-list"></div>
+                <button class="btn-add" onclick="addEducation()"><i class="fas fa-plus-circle"></i> Tambah Pendidikan</button>
+            </div>
+
+            <!-- Skills Tab -->
+            <div class="tab-content" id="skills-tab">
+                <h3 style="margin-bottom: 15px; color: #1e293b;">Keahlian</h3>
+                <div class="form-group">
+                    <label><i class="fas fa-code"></i> Hard Skills</label>
+                    <div id="hard-skills-list" class="item-list"></div>
+                    <button class="btn-add" onclick="addHardSkill()">+ Tambah Hard Skill</button>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label><i class="fas fa-users"></i> Soft Skills</label>
+                    <div id="soft-skills-list" class="item-list"></div>
+                    <button class="btn-add" onclick="addSoftSkill()">+ Tambah Soft Skill</button>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label><i class="fas fa-tools"></i> Tools</label>
+                    <div id="tools-list" class="item-list"></div>
+                    <button class="btn-add" onclick="addTool()">+ Tambah Tool</button>
+                </div>
+            </div>
+
+            <!-- Additional Tab -->
+            <div class="tab-content" id="additional-tab">
+                <h3 style="margin-bottom: 15px; color: #1e293b;">Informasi Tambahan</h3>
+                <div id="additional-list" class="item-list"></div>
+                <button class="btn-add" onclick="addAdditional()"><i class="fas fa-plus-circle"></i> Tambah Informasi</button>
+            </div>
+
+            <div class="action-buttons">
+                <button onclick="saveCV()" class="btn-save"><i class="fas fa-save"></i> Simpan CV</button>
+                <button onclick="printCV()" class="btn-print"><i class="fas fa-print"></i> Print PDF</button>
+            </div>
+        </div>
+
+        <!-- CV Preview -->
+        <div class="cv-preview">
+            <div class="cv-container" id="cvContent">
+                <!-- CV content akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let cvData = {
+            personal: {
+                name: 'John Doe',
+                phone: '+62 812 3456 7890',
+                email: 'john.doe@email.com',
+                location: 'Jakarta',
+                profession: 'Senior Web Developer'
+            },
+            summary: 'Profesional IT dengan 5+ tahun pengalaman dalam pengembangan web dan manajemen proyek. Terampil dalam berbagai teknologi modern dan memiliki kemampuan analisis yang baik. Berkomitmen untuk memberikan solusi inovatif dan efisien.',
+            experiences: [
+                { id: 1, title: 'Senior Web Developer', company: 'Tech Company', startDate: '2020', endDate: 'Sekarang', description: 'Mengembangkan aplikasi web dan memimpin tim developer, meningkatkan performa aplikasi sebesar 40%' }
+            ],
+            educations: [
+                { id: 1, degree: 'S1 Informatika', institution: 'Universitas Indonesia', graduationYear: '2019', gpa: '3.75' }
+            ],
+            hardSkills: [
+                { id: 1, name: 'JavaScript', icon: 'fa-brands fa-js' },
+                { id: 2, name: 'React', icon: 'fa-brands fa-react' },
+                { id: 3, name: 'Node.js', icon: 'fa-brands fa-node' }
+            ],
+            softSkills: [
+                { id: 1, name: 'Komunikasi' },
+                { id: 2, name: 'Team Work' },
+                { id: 3, name: 'Problem Solving' }
+            ],
+            tools: [
+                { id: 1, name: 'VS Code', icon: 'fa-solid fa-code' },
+                { id: 2, name: 'Git', icon: 'fa-brands fa-git-alt' },
+                { id: 3, name: 'Figma', icon: 'fa-brands fa-figma' }
+            ],
+            additional: [
+                { id: 1, icon: 'fa-solid fa-certificate', text: 'AWS Certified Developer' },
+                { id: 2, icon: 'fa-solid fa-language', text: 'English (TOEFL 550)' },
+                { id: 3, icon: 'fa-solid fa-users', text: 'Ketua Himpunan 2018' }
+            ]
+        };
+
+        let editingId = null;
+
+        // Color customization
+        document.getElementById('primaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--primary-color', e.target.value);
+            updatePreview();
+        });
+
+        document.getElementById('secondaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--secondary-color', e.target.value);
+            updatePreview();
+        });
+
+        document.getElementById('bgColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--bg-color', e.target.value);
+            updatePreview();
+        });
+
+        document.getElementById('textColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--text-color', e.target.value);
+            updatePreview();
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+
+        // Form inputs
+        document.getElementById('fullName').addEventListener('input', (e) => {
+            cvData.personal.name = e.target.value;
+            updatePreview();
+        });
+        document.getElementById('phone').addEventListener('input', (e) => {
+            cvData.personal.phone = e.target.value;
+            updatePreview();
+        });
+        document.getElementById('email').addEventListener('input', (e) => {
+            cvData.personal.email = e.target.value;
+            updatePreview();
+        });
+        document.getElementById('location').addEventListener('input', (e) => {
+            cvData.personal.location = e.target.value;
+            updatePreview();
+        });
+        document.getElementById('profession').addEventListener('input', (e) => {
+            cvData.personal.profession = e.target.value;
+            updatePreview();
+        });
+        document.getElementById('summary').addEventListener('input', (e) => {
+            cvData.summary = e.target.value;
+            updatePreview();
+        });
+
+        // CRUD Functions
+        function addExperience() {
+            const newExp = {
+                id: Date.now(),
+                title: 'Posisi Baru',
+                company: 'Perusahaan',
+                startDate: '2023',
+                endDate: 'Sekarang',
+                description: 'Deskripsi pekerjaan dan pencapaian'
+            };
+            cvData.experiences.push(newExp);
+            renderExperienceList();
+            updatePreview();
+        }
+
+        function editExperience(id) {
+            const exp = cvData.experiences.find(e => e.id === id);
+            if (exp) {
+                const newTitle = prompt('Edit Posisi:', exp.title);
+                if (newTitle) exp.title = newTitle;
+                const newCompany = prompt('Edit Perusahaan:', exp.company);
+                if (newCompany) exp.company = newCompany;
+                const newStart = prompt('Edit Tahun Mulai:', exp.startDate);
+                if (newStart) exp.startDate = newStart;
+                const newEnd = prompt('Edit Tahun Selesai:', exp.endDate);
+                if (newEnd) exp.endDate = newEnd;
+                const newDesc = prompt('Edit Deskripsi:', exp.description);
+                if (newDesc) exp.description = newDesc;
+                renderExperienceList();
+                updatePreview();
+            }
+        }
+
+        function deleteExperience(id) {
+            if (confirm('Hapus pengalaman ini?')) {
+                cvData.experiences = cvData.experiences.filter(e => e.id !== id);
+                renderExperienceList();
+                updatePreview();
+            }
+        }
+
+        function addEducation() {
+            const newEdu = {
+                id: Date.now(),
+                degree: 'Jurusan Baru',
+                institution: 'Institusi',
+                graduationYear: '2023',
+                gpa: '3.50'
+            };
+            cvData.educations.push(newEdu);
+            renderEducationList();
+            updatePreview();
+        }
+
+        function editEducation(id) {
+            const edu = cvData.educations.find(e => e.id === id);
+            if (edu) {
+                const newDegree = prompt('Edit Jurusan:', edu.degree);
+                if (newDegree) edu.degree = newDegree;
+                const newInst = prompt('Edit Institusi:', edu.institution);
+                if (newInst) edu.institution = newInst;
+                const newYear = prompt('Edit Tahun Lulus:', edu.graduationYear);
+                if (newYear) edu.graduationYear = newYear;
+                const newGPA = prompt('Edit IPK:', edu.gpa);
+                if (newGPA) edu.gpa = newGPA;
+                renderEducationList();
+                updatePreview();
+            }
+        }
+
+        function deleteEducation(id) {
+            if (confirm('Hapus pendidikan ini?')) {
+                cvData.educations = cvData.educations.filter(e => e.id !== id);
+                renderEducationList();
+                updatePreview();
+            }
+        }
+
+        function addHardSkill() {
+            const newSkill = {
+                id: Date.now(),
+                name: 'Skill Baru',
+                icon: 'fa-solid fa-code'
+            };
+            cvData.hardSkills.push(newSkill);
+            renderHardSkillsList();
+            updatePreview();
+        }
+
+        function editHardSkill(id) {
+            const skill = cvData.hardSkills.find(s => s.id === id);
+            if (skill) {
+                const newName = prompt('Edit Nama Skill:', skill.name);
+                if (newName) skill.name = newName;
+                const newIcon = prompt('Edit Icon (contoh: fa-brands fa-react):', skill.icon);
+                if (newIcon) skill.icon = newIcon;
+                renderHardSkillsList();
+                updatePreview();
+            }
+        }
+
+        function deleteHardSkill(id) {
+            if (confirm('Hapus skill ini?')) {
+                cvData.hardSkills = cvData.hardSkills.filter(s => s.id !== id);
+                renderHardSkillsList();
+                updatePreview();
+            }
+        }
+
+        function addSoftSkill() {
+            const newSkill = {
+                id: Date.now(),
+                name: 'Soft Skill Baru'
+            };
+            cvData.softSkills.push(newSkill);
+            renderSoftSkillsList();
+            updatePreview();
+        }
+
+        function editSoftSkill(id) {
+            const skill = cvData.softSkills.find(s => s.id === id);
+            if (skill) {
+                const newName = prompt('Edit Nama Soft Skill:', skill.name);
+                if (newName) skill.name = newName;
+                renderSoftSkillsList();
+                updatePreview();
+            }
+        }
+
+        function deleteSoftSkill(id) {
+            if (confirm('Hapus soft skill ini?')) {
+                cvData.softSkills = cvData.softSkills.filter(s => s.id !== id);
+                renderSoftSkillsList();
+                updatePreview();
+            }
+        }
+
+        function addTool() {
+            const newTool = {
+                id: Date.now(),
+                name: 'Tool Baru',
+                icon: 'fa-solid fa-toolbox'
+            };
+            cvData.tools.push(newTool);
+            renderToolsList();
+            updatePreview();
+        }
+
+        function editTool(id) {
+            const tool = cvData.tools.find(t => t.id === id);
+            if (tool) {
+                const newName = prompt('Edit Nama Tool:', tool.name);
+                if (newName) tool.name = newName;
+                const newIcon = prompt('Edit Icon (contoh: fa-brands fa-git):', tool.icon);
+                if (newIcon) tool.icon = newIcon;
+                renderToolsList();
+                updatePreview();
+            }
+        }
+
+        function deleteTool(id) {
+            if (confirm('Hapus tool ini?')) {
+                cvData.tools = cvData.tools.filter(t => t.id !== id);
+                renderToolsList();
+                updatePreview();
+            }
+        }
+
+        function addAdditional() {
+            const newAdditional = {
+                id: Date.now(),
+                icon: 'fa-solid fa-info-circle',
+                text: 'Informasi tambahan'
+            };
+            cvData.additional.push(newAdditional);
+            renderAdditionalList();
+            updatePreview();
+        }
+
+        function editAdditional(id) {
+            const item = cvData.additional.find(a => a.id === id);
+            if (item) {
+                const newIcon = prompt('Edit Icon:', item.icon);
+                if (newIcon) item.icon = newIcon;
+                const newText = prompt('Edit Teks:', item.text);
+                if (newText) item.text = newText;
+                renderAdditionalList();
+                updatePreview();
+            }
+        }
+
+        function deleteAdditional(id) {
+            if (confirm('Hapus informasi ini?')) {
+                cvData.additional = cvData.additional.filter(a => a.id !== id);
+                renderAdditionalList();
+                updatePreview();
+            }
+        }
+
+        // Render functions
+        function renderExperienceList() {
+            const container = document.getElementById('experience-list');
+            container.innerHTML = cvData.experiences.map(exp => `
+                <div class="item-card">
+                    <div class="item-actions">
+                        <button class="btn-icon btn-edit" onclick="editExperience(${exp.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon btn-delete" onclick="deleteExperience(${exp.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <strong><i class="fas fa-briefcase" style="color: var(--primary-color); margin-right: 5px;"></i>${exp.title}</strong><br>
+                    <small style="color: #64748b;">${exp.company} | ${exp.startDate} - ${exp.endDate}</small>
+                </div>
+            `).join('');
+        }
+
+        function renderEducationList() {
+            const container = document.getElementById('education-list');
+            container.innerHTML = cvData.educations.map(edu => `
+                <div class="item-card">
+                    <div class="item-actions">
+                        <button class="btn-icon btn-edit" onclick="editEducation(${edu.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon btn-delete" onclick="deleteEducation(${edu.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <strong><i class="fas fa-graduation-cap" style="color: var(--primary-color); margin-right: 5px;"></i>${edu.degree}</strong><br>
+                    <small style="color: #64748b;">${edu.institution} | ${edu.graduationYear} ${edu.gpa && parseFloat(edu.gpa) >= 3.0 ? `(IPK: ${edu.gpa})` : ''}</small>
+                </div>
+            `).join('');
+        }
+
+        function renderHardSkillsList() {
+            const container = document.getElementById('hard-skills-list');
+            container.innerHTML = cvData.hardSkills.map(skill => `
+                <div class="item-card">
+                    <div class="item-actions">
+                        <button class="btn-icon btn-edit" onclick="editHardSkill(${skill.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon btn-delete" onclick="deleteHardSkill(${skill.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <i class="${skill.icon}" style="color: var(--primary-color); width: 20px;"></i> ${skill.name}
+                </div>
+            `).join('');
+        }
+
+        function renderSoftSkillsList() {
+            const container = document.getElementById('soft-skills-list');
+            container.innerHTML = cvData.softSkills.map(skill => `
+                <div class="item-card">
+                    <div class="item-actions">
+                        <button class="btn-icon btn-edit" onclick="editSoftSkill(${skill.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon btn-delete" onclick="deleteSoftSkill(${skill.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <i class="fas fa-user-check" style="color: var(--primary-color); width: 20px;"></i> ${skill.name}
+                </div>
+            `).join('');
+        }
+
+        function renderToolsList() {
+            const container = document.getElementById('tools-list');
+            container.innerHTML = cvData.tools.map(tool => `
+                <div class="item-card">
+                    <div class="item-actions">
+                        <button class="btn-icon btn-edit" onclick="editTool(${tool.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon btn-delete" onclick="deleteTool(${tool.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <i class="${tool.icon}" style="color: var(--primary-color); width: 20px;"></i> ${tool.name}
+                </div>
+            `).join('');
+        }
+
+        function renderAdditionalList() {
+            const container = document.getElementById('additional-list');
+            container.innerHTML = cvData.additional.map(item => `
+                <div class="item-card">
+                    <div class="item-actions">
+                        <button class="btn-icon btn-edit" onclick="editAdditional(${item.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon btn-delete" onclick="deleteAdditional(${item.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <i class="${item.icon}" style="color: var(--primary-color); width: 20px;"></i> ${item.text}
+                </div>
+            `).join('');
+        }
+
+        function updatePreview() {
+            const primaryColor = document.getElementById('primaryColor').value;
+            const secondaryColor = document.getElementById('secondaryColor').value;
+            const bgColor = document.getElementById('bgColor').value;
+            const textColor = document.getElementById('textColor').value;
+
+            const cvContent = document.getElementById('cvContent');
+            cvContent.innerHTML = `
+                <div class="cv-template-2" style="--primary-color: ${primaryColor}; --secondary-color: ${secondaryColor}; --bg-color: ${bgColor}; --text-color: ${textColor};">
+                    <div class="cv-header-2">
+                        <div class="cv-name-2">${cvData.personal.name}</div>
+                        <div class="cv-title-2">${cvData.personal.profession}</div>
+                        <div class="cv-contact-2">
+                            <div class="contact-item-2"><i class="fas fa-phone"></i> ${cvData.personal.phone}</div>
+                            <div class="contact-item-2"><i class="fas fa-envelope"></i> ${cvData.personal.email}</div>
+                            <div class="contact-item-2"><i class="fas fa-map-marker-alt"></i> ${cvData.personal.location}</div>
+                        </div>
+                    </div>
+
+                    <div class="cv-body-2">
+                        <div class="section-2">
+                            <div class="section-title-2">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Ringkasan Profil</span>
+                            </div>
+                            <div class="summary-text-2">${cvData.summary}</div>
+                        </div>
+
+                        <div class="section-2">
+                            <div class="section-title-2">
+                                <i class="fas fa-briefcase"></i>
+                                <span>Pengalaman Kerja</span>
+                            </div>
+                            ${cvData.experiences.map(exp => `
+                                <div class="experience-item-2">
+                                    <div class="exp-header-2">
+                                        <div>
+                                            <div class="exp-title-2">${exp.title}</div>
+                                            <div class="exp-company-2">${exp.company}</div>
+                                        </div>
+                                        <div class="exp-date-2">${exp.startDate} - ${exp.endDate}</div>
+                                    </div>
+                                    <div class="exp-description-2">${exp.description}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="section-2">
+                            <div class="section-title-2">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Pendidikan</span>
+                            </div>
+                            ${cvData.educations.map(edu => `
+                                <div class="education-item-2">
+                                    <div class="exp-header-2">
+                                        <div>
+                                            <div class="exp-title-2">${edu.degree}</div>
+                                            <div class="exp-company-2">${edu.institution}</div>
+                                        </div>
+                                        <div class="exp-date-2">${edu.graduationYear}</div>
+                                    </div>
+                                    ${edu.gpa && parseFloat(edu.gpa) >= 3.0 ? `<div class="exp-description-2">IPK: ${edu.gpa}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="section-2">
+                            <div class="section-title-2">
+                                <i class="fas fa-code"></i>
+                                <span>Keahlian Teknis</span>
+                            </div>
+                            <div class="skills-grid-2">
+                                ${cvData.hardSkills.map(skill => `
+                                    <span class="skill-item-2"><i class="${skill.icon}"></i> ${skill.name}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="section-2">
+                            <div class="section-title-2">
+                                <i class="fas fa-users"></i>
+                                <span>Soft Skills</span>
+                            </div>
+                            <div class="skills-grid-2">
+                                ${cvData.softSkills.map(skill => `
+                                    <span class="skill-item-2"><i class="fas fa-user-check"></i> ${skill.name}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="section-2">
+                            <div class="section-title-2">
+                                <i class="fas fa-tools"></i>
+                                <span>Tools</span>
+                            </div>
+                            <div class="tools-cloud-2">
+                                ${cvData.tools.map(tool => `
+                                    <span class="tool-item-2"><i class="${tool.icon}"></i> ${tool.name}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="section-2">
+                            <div class="section-title-2">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Informasi Tambahan</span>
+                            </div>
+                            <div class="additional-grid-2">
+                                ${cvData.additional.map(item => `
+                                    <div class="additional-item-2">
+                                        <i class="${item.icon}"></i>
+                                        <span>${item.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveCV() {
+            const fileName = `${cvData.personal.name.replace(/\s+/g, '_')}_CV.json`;
+            const dataStr = JSON.stringify(cvData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            alert('CV berhasil disimpan!');
+        }
+
+        function printCV() {
+            window.print();
+        }
+
+        // Initial render
+        renderExperienceList();
+        renderEducationList();
+        renderHardSkillsList();
+        renderSoftSkillsList();
+        renderToolsList();
+        renderAdditionalList();
+        updatePreview();
+    </script>
+</body>
+</html>
