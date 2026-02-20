@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Builder - 3D Card Stack Studio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* RESET DAN VARIABEL */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: #0a0a0f;
+            background-image: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 25%),
+                              radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15) 0%, transparent 25%);
+            padding: 25px;
+        }
+
+        /* MAIN CONTAINER */
+        .workspace-3d {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 25px;
+        }
+
+        /* ===== EDITOR PANEL ===== */
+        .editor-3d {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 30px;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            height: fit-content;
+            max-height: 95vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .editor-header-3d {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .editor-header-3d h2 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        /* PHOTO STUDIO 3D */
+        .photo-studio-3d {
+            background: linear-gradient(145deg, #1e1e2f, #2d2d44);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 25px 40px -15px #00000080, 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            transform: perspective(1000px) rotateX(2deg);
+            transition: transform 0.3s;
+        }
+
+        .photo-studio-3d:hover {
+            transform: perspective(1000px) rotateX(0deg);
+        }
+
+        .photo-frame-3d {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: floatPhoto 6s ease-in-out infinite;
+        }
+
+        @keyframes floatPhoto {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(5deg); }
+        }
+
+        .photo-frame-3d::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            background: linear-gradient(135deg, #6366f1, #ec4899, #6366f1);
+            border-radius: 50%;
+            animation: spin 3s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .photo-preview-3d {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid white;
+            position: relative;
+            background: #2d2d44;
+            box-shadow: 0 20px 30px -10px #000;
+        }
+
+        .photo-preview-3d img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-preview-3d i {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: #6366f1;
+            background: linear-gradient(135deg, #1e1e2f, #2d2d44);
+        }
+
+        .photo-actions-3d {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-3d {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-3d:hover::before {
+            left: 100%;
+        }
+
+        .btn-upload-3d {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-remove-3d {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-3d:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 30px -8px #000;
+        }
+
+        /* COLOR LAB 3D */
+        .color-lab-3d {
+            background: rgba(30, 30, 47, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .color-lab-3d h3 {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .color-grid-3d {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .color-item-3d {
+            text-align: center;
+        }
+
+        .color-item-3d label {
+            display: block;
+            color: #a0a0b0;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .color-item-3d input[type="color"] {
+            width: 100%;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        /* TEMPLATE SELECTOR 3D */
+        .template-picker-3d {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .template-card-3d {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 15px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .template-card-3d i {
+            font-size: 28px;
+            color: #6366f1;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .template-card-3d span {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .template-card-3d.active {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -10px #000;
+        }
+
+        .template-card-3d.active i {
+            color: white;
+        }
+
+        /* TABS 3D */
+        .tabs-3d {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tab-3d {
+            padding: 12px 18px;
+            border: none;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #a0a0b0;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .tab-3d.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab-pane-3d {
+            display: none;
+        }
+
+        .tab-pane-3d.active {
+            display: block;
+        }
+
+        /* FORM 3D */
+        .form-card-3d {
+            background: rgba(30, 30, 47, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .form-field-3d {
+            margin-bottom: 18px;
+        }
+
+        .form-field-3d label {
+            display: block;
+            margin-bottom: 6px;
+            color: #a0a0b0;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-field-3d input,
+        .form-field-3d textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            font-size: 14px;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .form-field-3d input:focus,
+        .form-field-3d textarea:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+        }
+
+        /* ITEM GALLERY 3D */
+        .item-gallery-3d {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .item-card-3d {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transform: perspective(1000px) rotateX(1deg);
+            transition: all 0.3s;
+        }
+
+        .item-card-3d:hover {
+            transform: perspective(1000px) rotateX(0deg) translateY(-3px);
+            border-color: #6366f1;
+            box-shadow: 0 20px 30px -10px #000;
+        }
+
+        .item-stamp-3d {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 15px -5px rgba(99,102,241,0.5);
+        }
+
+        .item-tools-3d {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .item-btn-3d {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .item-btn-3d:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .btn-edit-3d { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-copy-3d { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-delete-3d { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .btn-add-3d {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            padding: 16px;
+            border: 2px dashed rgba(99,102,241,0.5);
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-add-3d:hover {
+            background: rgba(99,102,241,0.2);
+            border-color: #6366f1;
+        }
+
+        /* ACTION BUTTONS 3D */
+        .action-group-3d {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-save-3d, .btn-print-3d {
+            padding: 18px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-save-3d {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-print-3d {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-save-3d:hover, .btn-print-3d:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 30px -8px #000;
+        }
+
+        /* ===== CV PREVIEW 3D ===== */
+        .cv-stage-3d {
+            background: transparent;
+            perspective: 2000px;
+            position: sticky;
+            top: 25px;
+        }
+
+        .cv-canvas-3d {
+            transform-style: preserve-3d;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(2deg); }
+        }
+
+        /* ===== TEMPLATE 17 - 3D CARD STACK (UNIQUE!) ===== */
+        .template-3d-stack {
+            min-height: 100vh;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .stack-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            transform-style: preserve-3d;
+        }
+
+        /* Card Lapisan 1 - Background Layer */
+        .stack-layer-1 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--primary, #6366f1);
+            transform: translateZ(-50px) scale(0.98);
+            border-radius: 40px;
+            opacity: 0.3;
+            filter: blur(5px);
+        }
+
+        /* Card Lapisan 2 - Mid Layer */
+        .stack-layer-2 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary, #6366f1), var(--secondary, #ec4899));
+            transform: translateZ(-30px) scale(0.99);
+            border-radius: 40px;
+            opacity: 0.5;
+        }
+
+        /* Card Lapisan 3 - Main Content */
+        .stack-layer-3 {
+            position: relative;
+            background: var(--bg, white);
+            border-radius: 40px;
+            padding: 40px;
+            transform: translateZ(0);
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5), 
+                        0 0 0 1px rgba(255,255,255,0.1) inset;
+            min-height: 100vh;
+            z-index: 10;
+        }
+
+        /* Header dengan 3D Effect */
+        .stack-header {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .stack-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 30px;
+            overflow: hidden;
+            transform: rotate(-5deg) scale(0.95);
+            box-shadow: 20px 20px 40px -10px rgba(0,0,0,0.4),
+                        -10px -10px 30px -5px rgba(255,255,255,0.3) inset;
+            transition: transform 0.3s;
+            border: 4px solid white;
+        }
+
+        .stack-photo:hover {
+            transform: rotate(0deg) scale(1);
+        }
+
+        .stack-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .stack-photo i {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            color: var(--primary, #6366f1);
+        }
+
+        .stack-title {
+            transform: perspective(1000px) rotateX(2deg);
+        }
+
+        .stack-name {
+            font-size: 64px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary, #6366f1), var(--secondary, #ec4899));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            line-height: 1.1;
+            text-shadow: 5px 5px 10px rgba(0,0,0,0.1);
+        }
+
+        .stack-profesi {
+            font-size: 24px;
+            color: #475569;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+
+        /* Contact Cards 3D */
+        .stack-contact {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+            transform-style: preserve-3d;
+        }
+
+        .contact-card-3d {
+            background: white;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.2),
+                        0 0 0 1px rgba(255,255,255,0.5) inset;
+            transform: translateY(0) rotateX(0deg);
+            transition: all 0.3s;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .contact-card-3d:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 30px 40px -10px var(--primary, #6366f1);
+        }
+
+        .contact-card-3d i {
+            font-size: 28px;
+            color: var(--primary, #6366f1);
+            margin-bottom: 10px;
+        }
+
+        .contact-card-3d span {
+            font-size: 12px;
+            color: #475569;
+            font-weight: 600;
+            display: block;
+        }
+
+        /* 3D Grid Layout */
+        .stack-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 2fr;
+            gap: 30px;
+            transform-style: preserve-3d;
+        }
+
+        /* Left Column - 3D Cards */
+        .stack-left {
+            transform: perspective(1000px) rotateY(2deg);
+        }
+
+        .stack-card {
+            background: white;
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 20px 30px -10px rgba(0,0,0,0.2),
+                        0 0 0 1px rgba(255,255,255,0.5) inset;
+            transform: translateZ(10px);
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .stack-card:hover {
+            transform: translateZ(20px);
+            box-shadow: 0 30px 40px -10px var(--primary, #6366f1);
+        }
+
+        .stack-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary, #6366f1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary, #6366f1);
+        }
+
+        /* Skill Bars 3D */
+        .skill-3d-item {
+            margin-bottom: 15px;
+            transform-style: preserve-3d;
+        }
+
+        .skill-3d-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+
+        .skill-3d-bar-container {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1) inset;
+        }
+
+        .skill-3d-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary, #6366f1), var(--secondary, #ec4899));
+            border-radius: 10px;
+            position: relative;
+            animation: skillGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes skillGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Right Column - Timeline 3D */
+        .stack-right {
+            transform: perspective(1000px) rotateY(-2deg);
+        }
+
+        .timeline-3d-item {
+            position: relative;
+            padding-left: 30px;
+            padding-bottom: 30px;
+            border-left: 3px solid var(--primary, #6366f1);
+            margin-bottom: 20px;
+        }
+
+        .timeline-3d-item::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary, #6366f1), var(--secondary, #ec4899));
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary, #6366f1);
+        }
+
+        .timeline-3d-date {
+            font-size: 12px;
+            color: var(--primary, #6366f1);
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .timeline-3d-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .timeline-3d-subtitle {
+            color: var(--primary, #6366f1);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .timeline-3d-desc {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        /* Certificate Stacks */
+        .cert-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .cert-3d {
+            background: linear-gradient(135deg, var(--primary, #6366f1), var(--secondary, #ec4899));
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+            transform: rotate(-2deg);
+            transition: all 0.3s;
+            box-shadow: 0 10px 15px -5px var(--primary, #6366f1);
+        }
+
+        .cert-3d:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .cert-3d i {
+            margin-right: 5px;
+        }
+
+        /* Language Badges */
+        .lang-3d {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 10px 18px;
+            border-radius: 20px;
+            margin: 0 8px 8px 0;
+            transform: translateZ(5px);
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .lang-3d:hover {
+            transform: translateZ(15px);
+            box-shadow: 0 10px 20px -5px var(--primary, #6366f1);
+        }
+
+        /* Interest Pills */
+        .interest-3d {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin: 0 8px 8px 0;
+            box-shadow: 0 5px 15px -5px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.8);
+            transform: rotate(1deg);
+            transition: all 0.3s;
+        }
+
+        .interest-3d:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 15px 25px -5px var(--primary, #6366f1);
+        }
+
+        .interest-3d i {
+            color: var(--primary, #6366f1);
+        }
+
+        /* Award Cards */
+        .award-3d {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            transform: rotate(-1deg);
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 10px 15px -5px rgba(0,0,0,0.2);
+        }
+
+        .award-3d:hover {
+            transform: rotate(0deg);
+        }
+
+        /* ===== PRINT OPTIMIZATION ===== */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .workspace-3d {
+                display: block;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .editor-3d,
+            .photo-studio-3d,
+            .color-lab-3d,
+            .template-picker-3d,
+            .tabs-3d,
+            .form-card-3d,
+            .item-gallery-3d,
+            .item-card-3d,
+            .item-tools-3d,
+            .btn-add-3d,
+            .action-group-3d,
+            .editor-header-3d h2 {
+                display: none !important;
+            }
+            
+            .cv-stage-3d {
+                position: static;
+                transform: none;
+                animation: none;
+            }
+            
+            .cv-canvas-3d {
+                transform: none;
+                animation: none;
+            }
+            
+            .template-3d-stack {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .stack-layer-1, .stack-layer-2 {
+                display: none;
+            }
+            
+            .stack-layer-3 {
+                box-shadow: none;
+                padding: 20px;
+                min-height: auto;
+            }
+            
+            .contact-card-3d, .stack-card, .cert-3d, .lang-3d, .interest-3d, .award-3d {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workspace-3d">
+        <!-- EDITOR PANEL 3D -->
+        <div class="editor-3d">
+            <div class="editor-header-3d">
+                <h2><i class="fas fa-cubes"></i> 3D Card Studio</h2>
+                <i class="fas fa-magic" style="font-size: 32px; color: #6366f1;"></i>
+            </div>
+
+            <!-- PHOTO STUDIO 3D -->
+            <div class="photo-studio-3d">
+                <div class="photo-frame-3d">
+                    <div class="photo-preview-3d" id="photoPreview3D">
+                        <i class="fas fa-user-astronaut" id="defaultPhotoIcon3D"></i>
+                        <img id="photoImage3D" src="" style="display: none;">
+                    </div>
+                </div>
+                <div class="photo-actions-3d">
+                    <input type="file" id="photoUpload3D" accept="image/*" style="display: none;">
+                    <button class="btn-3d btn-upload-3d" onclick="document.getElementById('photoUpload3D').click()">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload
+                    </button>
+                    <button class="btn-3d btn-remove-3d" onclick="removePhoto3D()">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+            </div>
+
+            <!-- COLOR LAB 3D -->
+            <div class="color-lab-3d">
+                <h3><i class="fas fa-paint-brush"></i> Color Lab 3D</h3>
+                <div class="color-grid-3d">
+                    <div class="color-item-3d">
+                        <label>PRIMARY</label>
+                        <input type="color" id="primaryColor3D" value="#6366f1">
+                    </div>
+                    <div class="color-item-3d">
+                        <label>SECONDARY</label>
+                        <input type="color" id="secondaryColor3D" value="#ec4899">
+                    </div>
+                    <div class="color-item-3d">
+                        <label>BACKGROUND</label>
+                        <input type="color" id="bgColor3D" value="#ffffff">
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEMPLATE SELECTOR - UNIQUE! -->
+            <div class="template-picker-3d">
+                <div class="template-card-3d active" onclick="selectTemplate3D(17)">
+                    <i class="fas fa-cubes"></i>
+                    <span>3D STACK</span>
+                </div>
+                <div class="template-card-3d" onclick="selectTemplate3D(18)">
+                    <i class="fas fa-dice-d6"></i>
+                    <span>HOLO</span>
+                </div>
+                <div class="template-card-3d" onclick="selectTemplate3D(19)">
+                    <i class="fas fa-crystal"></i>
+                    <span>CRYSTAL</span>
+                </div>
+                <div class="template-card-3d" onclick="selectTemplate3D(20)">
+                    <i class="fas fa-galaxy"></i>
+                    <span>NEBULA</span>
+                </div>
+            </div>
+
+            <!-- TABS 3D -->
+            <div class="tabs-3d">
+                <button class="tab-3d active" data-tab="personal3d"><i class="fas fa-user"></i> Personal</button>
+                <button class="tab-3d" data-tab="summary3d"><i class="fas fa-align-left"></i> Summary</button>
+                <button class="tab-3d" data-tab="experience3d"><i class="fas fa-briefcase"></i> Exp</button>
+                <button class="tab-3d" data-tab="education3d"><i class="fas fa-graduation-cap"></i> Edu</button>
+                <button class="tab-3d" data-tab="skills3d"><i class="fas fa-cog"></i> Skills</button>
+                <button class="tab-3d" data-tab="additional3d"><i class="fas fa-plus"></i> More</button>
+            </div>
+
+            <!-- PERSONAL TAB -->
+            <div class="tab-pane-3d active" id="personal3d-tab">
+                <div class="form-card-3d">
+                    <div class="form-field-3d">
+                        <label>Full Name</label>
+                        <input type="text" id="fullName3D" value="Nova Astrid">
+                    </div>
+                    <div class="form-field-3d">
+                        <label>Professional Title</label>
+                        <input type="text" id="profesi3D" value="3D Artist & Creative Technologist">
+                    </div>
+                    <div class="form-field-3d">
+                        <label>Phone</label>
+                        <input type="text" id="phone3D" value="+62 812 9999 8888">
+                    </div>
+                    <div class="form-field-3d">
+                        <label>Email</label>
+                        <input type="email" id="email3D" value="nova.astrid@email.com">
+                    </div>
+                    <div class="form-field-3d">
+                        <label>Location</label>
+                        <input type="text" id="location3D" value="Jakarta, Indonesia">
+                    </div>
+                    <div class="form-field-3d">
+                        <label>Website</label>
+                        <input type="text" id="website3D" value="novaastrid.design">
+                    </div>
+                    <div class="form-field-3d">
+                        <label>Instagram</label>
+                        <input type="text" id="instagram3D" value="@nova_astrid">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUMMARY TAB -->
+            <div class="tab-pane-3d" id="summary3d-tab">
+                <div class="form-card-3d">
+                    <div class="form-field-3d">
+                        <label>Professional Summary</label>
+                        <textarea id="summary3D" rows="6">Creative Technologist and 3D Artist with 7+ years of experience in creating immersive digital experiences. Expert in 3D modeling, AR/VR development, and interactive design. Led innovative projects for global brands, combining artistic vision with technical expertise.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXPERIENCE TAB -->
+            <div class="tab-pane-3d" id="experience3d-tab">
+                <div class="form-card-3d">
+                    <div id="experience-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addExperience3D()">
+                        <i class="fas fa-plus"></i> Add Experience
+                    </button>
+                </div>
+            </div>
+
+            <!-- EDUCATION TAB -->
+            <div class="tab-pane-3d" id="education3d-tab">
+                <div class="form-card-3d">
+                    <div id="education-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addEducation3D()">
+                        <i class="fas fa-plus"></i> Add Education
+                    </button>
+                </div>
+            </div>
+
+            <!-- SKILLS TAB -->
+            <div class="tab-pane-3d" id="skills3d-tab">
+                <div class="form-card-3d">
+                    <h4 style="color: white; margin-bottom: 15px;">Hard Skills</h4>
+                    <div id="hard-skills-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addHardSkill3D()">
+                        <i class="fas fa-plus"></i> Add Hard Skill
+                    </button>
+                    
+                    <h4 style="color: white; margin: 20px 0 15px;">Soft Skills</h4>
+                    <div id="soft-skills-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addSoftSkill3D()">
+                        <i class="fas fa-plus"></i> Add Soft Skill
+                    </button>
+                    
+                    <h4 style="color: white; margin: 20px 0 15px;">Tools</h4>
+                    <div id="tools-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addTool3D()">
+                        <i class="fas fa-plus"></i> Add Tool
+                    </button>
+                </div>
+            </div>
+
+            <!-- ADDITIONAL TAB -->
+            <div class="tab-pane-3d" id="additional3d-tab">
+                <div class="form-card-3d">
+                    <h4 style="color: white; margin-bottom: 15px;">Certifications</h4>
+                    <div id="certification-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addCertification3D()">
+                        <i class="fas fa-plus"></i> Add Certification
+                    </button>
+                    
+                    <h4 style="color: white; margin: 20px 0 15px;">Languages</h4>
+                    <div id="language-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addLanguage3D()">
+                        <i class="fas fa-plus"></i> Add Language
+                    </button>
+                    
+                    <h4 style="color: white; margin: 20px 0 15px;">Interests</h4>
+                    <div id="interest-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addInterest3D()">
+                        <i class="fas fa-plus"></i> Add Interest
+                    </button>
+                    
+                    <h4 style="color: white; margin: 20px 0 15px;">Awards</h4>
+                    <div id="award-list-3d" class="item-gallery-3d"></div>
+                    <button class="btn-add-3d" onclick="addAward3D()">
+                        <i class="fas fa-plus"></i> Add Award
+                    </button>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="action-group-3d">
+                <button onclick="saveCV3D()" class="btn-save-3d">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button onclick="printCV3D()" class="btn-print-3d">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+
+        <!-- CV PREVIEW 3D -->
+        <div class="cv-stage-3d" id="cvPreview3D">
+            <div class="cv-canvas-3d" id="cvContent3D">
+                <!-- Content will be filled by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentTemplate3D = 17;
+        let photoData3D = null;
+
+        let cvData3D = {
+            personal: {
+                name: 'Nova Astrid',
+                profesi: '3D Artist & Creative Technologist',
+                phone: '+62 812 9999 8888',
+                email: 'nova.astrid@email.com',
+                location: 'Jakarta, Indonesia',
+                website: 'novaastrid.design',
+                instagram: '@nova_astrid'
+            },
+            summary: 'Creative Technologist and 3D Artist with 7+ years of experience in creating immersive digital experiences. Expert in 3D modeling, AR/VR development, and interactive design. Led innovative projects for global brands, combining artistic vision with technical expertise.',
+            experiences: [
+                { id: 1, title: 'Lead 3D Artist', company: 'Immersive Studio', startDate: '2021', endDate: 'Present', description: 'Led creative team in developing AR/VR experiences for major clients. Created 3D assets for interactive installations.' },
+                { id: 2, title: '3D Generalist', company: 'Digital Arts Lab', startDate: '2018', endDate: '2021', description: 'Created 3D models and animations for advertising campaigns. Collaborated with art directors on visual development.' }
+            ],
+            educations: [
+                { id: 1, degree: 'MFA in Digital Arts', institution: 'Institute of Creative Technologies', graduationYear: '2018', gpa: '3.96' },
+                { id: 2, degree: 'BFA in Animation', institution: 'Art University', graduationYear: '2016', gpa: '3.85' }
+            ],
+            hardSkills: [
+                { id: 1, name: 'Blender', icon: 'fa-solid fa-cube', level: 98 },
+                { id: 2, name: 'Maya', icon: 'fa-solid fa-shapes', level: 92 },
+                { id: 3, name: 'ZBrush', icon: 'fa-solid fa-paint-brush', level: 88 },
+                { id: 4, name: 'Substance Painter', icon: 'fa-solid fa-palette', level: 85 }
+            ],
+            softSkills: [
+                { id: 1, name: 'Creativity', level: 99 },
+                { id: 2, name: 'Visual Thinking', level: 98 },
+                { id: 3, name: 'Collaboration', level: 92 },
+                { id: 4, name: 'Storytelling', level: 90 }
+            ],
+            tools: [
+                { id: 1, name: 'Unity', icon: 'fa-brands fa-unity' },
+                { id: 2, name: 'Unreal Engine', icon: 'fa-solid fa-gamepad' },
+                { id: 3, name: 'Photoshop', icon: 'fa-solid fa-paint-brush' },
+                { id: 4, name: 'After Effects', icon: 'fa-solid fa-film' }
+            ],
+            certifications: [
+                { id: 1, name: 'Unity Certified Artist', issuer: 'Unity', year: '2023' },
+                { id: 2, name: 'Blender Master', issuer: 'Blender Foundation', year: '2022' }
+            ],
+            languages: [
+                { id: 1, name: 'English', level: 'Native' },
+                { id: 2, name: 'Indonesian', level: 'Native' },
+                { id: 3, name: 'Japanese', level: 'Intermediate' }
+            ],
+            interests: [
+                { id: 1, icon: 'fa-solid fa-cubes', text: '3D Printing' },
+                { id: 2, icon: 'fa-solid fa-vr-cardboard', text: 'VR Gaming' },
+                { id: 3, icon: 'fa-solid fa-robot', text: 'AI Art' },
+                { id: 4, icon: 'fa-solid fa-camera', text: 'Photography' }
+            ],
+            awards: [
+                { id: 1, name: 'Best 3D Artist 2023', issuer: 'Digital Awards', year: '2023' },
+                { id: 2, name: 'Innovation in AR', issuer: 'Tech Fest', year: '2022' }
+            ]
+        };
+
+        // Photo handling
+        document.getElementById('photoUpload3D').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    photoData3D = event.target.result;
+                    document.getElementById('defaultPhotoIcon3D').style.display = 'none';
+                    document.getElementById('photoImage3D').style.display = 'block';
+                    document.getElementById('photoImage3D').src = event.target.result;
+                    updatePreview3D();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function removePhoto3D() {
+            photoData3D = null;
+            document.getElementById('defaultPhotoIcon3D').style.display = 'flex';
+            document.getElementById('photoImage3D').style.display = 'none';
+            document.getElementById('photoImage3D').src = '';
+            document.getElementById('photoUpload3D').value = '';
+            updatePreview3D();
+        }
+
+        // Color management
+        document.getElementById('primaryColor3D').addEventListener('input', function(e) {
+            document.documentElement.style.setProperty('--primary', e.target.value);
+            updatePreview3D();
+        });
+
+        document.getElementById('secondaryColor3D').addEventListener('input', function(e) {
+            document.documentElement.style.setProperty('--secondary', e.target.value);
+            updatePreview3D();
+        });
+
+        document.getElementById('bgColor3D').addEventListener('input', function(e) {
+            document.documentElement.style.setProperty('--bg', e.target.value);
+            updatePreview3D();
+        });
+
+        // Template selection
+        function selectTemplate3D(templateNum) {
+            currentTemplate3D = templateNum;
+            document.querySelectorAll('.template-card-3d').forEach(card => card.classList.remove('active'));
+            event.target.closest('.template-card-3d').classList.add('active');
+            updatePreview3D();
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-3d').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-3d').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane-3d').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+
+        // Form inputs
+        document.getElementById('fullName3D').addEventListener('input', (e) => {
+            cvData3D.personal.name = e.target.value;
+            updatePreview3D();
+        });
+
+        document.getElementById('profesi3D').addEventListener('input', (e) => {
+            cvData3D.personal.profesi = e.target.value;
+            updatePreview3D();
+        });
+
+        document.getElementById('phone3D').addEventListener('input', (e) => {
+            cvData3D.personal.phone = e.target.value;
+            updatePreview3D();
+        });
+
+        document.getElementById('email3D').addEventListener('input', (e) => {
+            cvData3D.personal.email = e.target.value;
+            updatePreview3D();
+        });
+
+        document.getElementById('location3D').addEventListener('input', (e) => {
+            cvData3D.personal.location = e.target.value;
+            updatePreview3D();
+        });
+
+        document.getElementById('website3D').addEventListener('input', (e) => {
+            cvData3D.personal.website = e.target.value;
+            updatePreview3D();
+        });
+
+        document.getElementById('instagram3D').addEventListener('input', (e) => {
+            cvData3D.personal.instagram = e.target.value;
+            updatePreview3D();
+        });
+
+        document.getElementById('summary3D').addEventListener('input', (e) => {
+            cvData3D.summary = e.target.value;
+            updatePreview3D();
+        });
+
+        // CRUD Functions
+        function addExperience3D() {
+            const newExp = {
+                id: Date.now(),
+                title: 'New Position',
+                company: 'Company Name',
+                startDate: '2024',
+                endDate: 'Present',
+                description: 'Key achievements and responsibilities...'
+            };
+            cvData3D.experiences.push(newExp);
+            renderExperienceList3D();
+            updatePreview3D();
+        }
+
+        function editExperience3D(id) {
+            const exp = cvData3D.experiences.find(e => e.id === id);
+            if (exp) {
+                const newTitle = prompt('Edit Position:', exp.title);
+                if (newTitle) exp.title = newTitle;
+                const newCompany = prompt('Edit Company:', exp.company);
+                if (newCompany) exp.company = newCompany;
+                const newStart = prompt('Edit Start Date:', exp.startDate);
+                if (newStart) exp.startDate = newStart;
+                const newEnd = prompt('Edit End Date:', exp.endDate);
+                if (newEnd) exp.endDate = newEnd;
+                const newDesc = prompt('Edit Description:', exp.description);
+                if (newDesc) exp.description = newDesc;
+                renderExperienceList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateExperience3D(id) {
+            const exp = cvData3D.experiences.find(e => e.id === id);
+            if (exp) {
+                const newExp = { ...exp, id: Date.now(), title: exp.title + ' (Copy)' };
+                cvData3D.experiences.push(newExp);
+                renderExperienceList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteExperience3D(id) {
+            if (confirm('Delete this experience?')) {
+                cvData3D.experiences = cvData3D.experiences.filter(e => e.id !== id);
+                renderExperienceList3D();
+                updatePreview3D();
+            }
+        }
+
+        function addEducation3D() {
+            const newEdu = {
+                id: Date.now(),
+                degree: 'New Degree',
+                institution: 'University',
+                graduationYear: '2024',
+                gpa: '3.50'
+            };
+            cvData3D.educations.push(newEdu);
+            renderEducationList3D();
+            updatePreview3D();
+        }
+
+        function editEducation3D(id) {
+            const edu = cvData3D.educations.find(e => e.id === id);
+            if (edu) {
+                const newDegree = prompt('Edit Degree:', edu.degree);
+                if (newDegree) edu.degree = newDegree;
+                const newInst = prompt('Edit Institution:', edu.institution);
+                if (newInst) edu.institution = newInst;
+                const newYear = prompt('Edit Graduation Year:', edu.graduationYear);
+                if (newYear) edu.graduationYear = newYear;
+                const newGPA = prompt('Edit GPA:', edu.gpa);
+                if (newGPA !== null) edu.gpa = newGPA;
+                renderEducationList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateEducation3D(id) {
+            const edu = cvData3D.educations.find(e => e.id === id);
+            if (edu) {
+                const newEdu = { ...edu, id: Date.now(), degree: edu.degree + ' (Copy)' };
+                cvData3D.educations.push(newEdu);
+                renderEducationList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteEducation3D(id) {
+            if (confirm('Delete this education?')) {
+                cvData3D.educations = cvData3D.educations.filter(e => e.id !== id);
+                renderEducationList3D();
+                updatePreview3D();
+            }
+        }
+
+        function addHardSkill3D() {
+            const newSkill = {
+                id: Date.now(),
+                name: 'New Skill',
+                icon: 'fa-solid fa-code',
+                level: 80
+            };
+            cvData3D.hardSkills.push(newSkill);
+            renderHardSkillsList3D();
+            updatePreview3D();
+        }
+
+        function editHardSkill3D(id) {
+            const skill = cvData3D.hardSkills.find(s => s.id === id);
+            if (skill) {
+                const newName = prompt('Edit Skill Name:', skill.name);
+                if (newName) skill.name = newName;
+                const newIcon = prompt('Edit Icon:', skill.icon);
+                if (newIcon) skill.icon = newIcon;
+                const newLevel = prompt('Edit Level (0-100):', skill.level);
+                if (newLevel) skill.level = parseInt(newLevel);
+                renderHardSkillsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateHardSkill3D(id) {
+            const skill = cvData3D.hardSkills.find(s => s.id === id);
+            if (skill) {
+                const newSkill = { ...skill, id: Date.now(), name: skill.name + ' (Copy)' };
+                cvData3D.hardSkills.push(newSkill);
+                renderHardSkillsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteHardSkill3D(id) {
+            if (confirm('Delete this skill?')) {
+                cvData3D.hardSkills = cvData3D.hardSkills.filter(s => s.id !== id);
+                renderHardSkillsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function addSoftSkill3D() {
+            const newSkill = {
+                id: Date.now(),
+                name: 'New Soft Skill',
+                level: 85
+            };
+            cvData3D.softSkills.push(newSkill);
+            renderSoftSkillsList3D();
+            updatePreview3D();
+        }
+
+        function editSoftSkill3D(id) {
+            const skill = cvData3D.softSkills.find(s => s.id === id);
+            if (skill) {
+                const newName = prompt('Edit Soft Skill:', skill.name);
+                if (newName) skill.name = newName;
+                const newLevel = prompt('Edit Level:', skill.level);
+                if (newLevel) skill.level = parseInt(newLevel);
+                renderSoftSkillsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateSoftSkill3D(id) {
+            const skill = cvData3D.softSkills.find(s => s.id === id);
+            if (skill) {
+                const newSkill = { ...skill, id: Date.now(), name: skill.name + ' (Copy)' };
+                cvData3D.softSkills.push(newSkill);
+                renderSoftSkillsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteSoftSkill3D(id) {
+            if (confirm('Delete this soft skill?')) {
+                cvData3D.softSkills = cvData3D.softSkills.filter(s => s.id !== id);
+                renderSoftSkillsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function addTool3D() {
+            const newTool = {
+                id: Date.now(),
+                name: 'New Tool',
+                icon: 'fa-solid fa-toolbox'
+            };
+            cvData3D.tools.push(newTool);
+            renderToolsList3D();
+            updatePreview3D();
+        }
+
+        function editTool3D(id) {
+            const tool = cvData3D.tools.find(t => t.id === id);
+            if (tool) {
+                const newName = prompt('Edit Tool Name:', tool.name);
+                if (newName) tool.name = newName;
+                const newIcon = prompt('Edit Icon:', tool.icon);
+                if (newIcon) tool.icon = newIcon;
+                renderToolsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateTool3D(id) {
+            const tool = cvData3D.tools.find(t => t.id === id);
+            if (tool) {
+                const newTool = { ...tool, id: Date.now(), name: tool.name + ' (Copy)' };
+                cvData3D.tools.push(newTool);
+                renderToolsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteTool3D(id) {
+            if (confirm('Delete this tool?')) {
+                cvData3D.tools = cvData3D.tools.filter(t => t.id !== id);
+                renderToolsList3D();
+                updatePreview3D();
+            }
+        }
+
+        function addCertification3D() {
+            const newCert = {
+                id: Date.now(),
+                name: 'New Certification',
+                issuer: 'Institution',
+                year: '2024'
+            };
+            cvData3D.certifications.push(newCert);
+            renderCertificationList3D();
+            updatePreview3D();
+        }
+
+        function editCertification3D(id) {
+            const cert = cvData3D.certifications.find(c => c.id === id);
+            if (cert) {
+                const newName = prompt('Edit Certification:', cert.name);
+                if (newName) cert.name = newName;
+                const newIssuer = prompt('Edit Issuer:', cert.issuer);
+                if (newIssuer) cert.issuer = newIssuer;
+                const newYear = prompt('Edit Year:', cert.year);
+                if (newYear) cert.year = newYear;
+                renderCertificationList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateCertification3D(id) {
+            const cert = cvData3D.certifications.find(c => c.id === id);
+            if (cert) {
+                const newCert = { ...cert, id: Date.now(), name: cert.name + ' (Copy)' };
+                cvData3D.certifications.push(newCert);
+                renderCertificationList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteCertification3D(id) {
+            if (confirm('Delete this certification?')) {
+                cvData3D.certifications = cvData3D.certifications.filter(c => c.id !== id);
+                renderCertificationList3D();
+                updatePreview3D();
+            }
+        }
+
+        function addLanguage3D() {
+            const newLang = {
+                id: Date.now(),
+                name: 'New Language',
+                level: 'Intermediate'
+            };
+            cvData3D.languages.push(newLang);
+            renderLanguageList3D();
+            updatePreview3D();
+        }
+
+        function editLanguage3D(id) {
+            const lang = cvData3D.languages.find(l => l.id === id);
+            if (lang) {
+                const newName = prompt('Edit Language:', lang.name);
+                if (newName) lang.name = newName;
+                const newLevel = prompt('Edit Level:', lang.level);
+                if (newLevel) lang.level = newLevel;
+                renderLanguageList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateLanguage3D(id) {
+            const lang = cvData3D.languages.find(l => l.id === id);
+            if (lang) {
+                const newLang = { ...lang, id: Date.now(), name: lang.name + ' (Copy)' };
+                cvData3D.languages.push(newLang);
+                renderLanguageList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteLanguage3D(id) {
+            if (confirm('Delete this language?')) {
+                cvData3D.languages = cvData3D.languages.filter(l => l.id !== id);
+                renderLanguageList3D();
+                updatePreview3D();
+            }
+        }
+
+        function addInterest3D() {
+            const newInterest = {
+                id: Date.now(),
+                icon: 'fa-solid fa-star',
+                text: 'New Interest'
+            };
+            cvData3D.interests.push(newInterest);
+            renderInterestList3D();
+            updatePreview3D();
+        }
+
+        function editInterest3D(id) {
+            const interest = cvData3D.interests.find(i => i.id === id);
+            if (interest) {
+                const newIcon = prompt('Edit Icon:', interest.icon);
+                if (newIcon) interest.icon = newIcon;
+                const newText = prompt('Edit Text:', interest.text);
+                if (newText) interest.text = newText;
+                renderInterestList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateInterest3D(id) {
+            const interest = cvData3D.interests.find(i => i.id === id);
+            if (interest) {
+                const newInterest = { ...interest, id: Date.now(), text: interest.text + ' (Copy)' };
+                cvData3D.interests.push(newInterest);
+                renderInterestList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteInterest3D(id) {
+            if (confirm('Delete this interest?')) {
+                cvData3D.interests = cvData3D.interests.filter(i => i.id !== id);
+                renderInterestList3D();
+                updatePreview3D();
+            }
+        }
+
+        function addAward3D() {
+            const newAward = {
+                id: Date.now(),
+                name: 'New Award',
+                issuer: 'Organization',
+                year: '2024'
+            };
+            cvData3D.awards.push(newAward);
+            renderAwardList3D();
+            updatePreview3D();
+        }
+
+        function editAward3D(id) {
+            const award = cvData3D.awards.find(a => a.id === id);
+            if (award) {
+                const newName = prompt('Edit Award:', award.name);
+                if (newName) award.name = newName;
+                const newIssuer = prompt('Edit Issuer:', award.issuer);
+                if (newIssuer) award.issuer = newIssuer;
+                const newYear = prompt('Edit Year:', award.year);
+                if (newYear) award.year = newYear;
+                renderAwardList3D();
+                updatePreview3D();
+            }
+        }
+
+        function duplicateAward3D(id) {
+            const award = cvData3D.awards.find(a => a.id === id);
+            if (award) {
+                const newAward = { ...award, id: Date.now(), name: award.name + ' (Copy)' };
+                cvData3D.awards.push(newAward);
+                renderAwardList3D();
+                updatePreview3D();
+            }
+        }
+
+        function deleteAward3D(id) {
+            if (confirm('Delete this award?')) {
+                cvData3D.awards = cvData3D.awards.filter(a => a.id !== id);
+                renderAwardList3D();
+                updatePreview3D();
+            }
+        }
+
+        // Render functions
+        function renderExperienceList3D() {
+            const container = document.getElementById('experience-list-3d');
+            container.innerHTML = cvData3D.experiences.map(exp => `
+                <div class="item-card-3d">
+                    <span class="item-stamp-3d">${exp.startDate} - ${exp.endDate}</span>
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editExperience3D(${exp.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateExperience3D(${exp.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteExperience3D(${exp.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white; margin-bottom: 5px;">${exp.title}</h4>
+                    <p style="color: #a0a0b0; font-size: 13px;">${exp.company}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderEducationList3D() {
+            const container = document.getElementById('education-list-3d');
+            container.innerHTML = cvData3D.educations.map(edu => `
+                <div class="item-card-3d">
+                    <span class="item-stamp-3d">${edu.graduationYear}</span>
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editEducation3D(${edu.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateEducation3D(${edu.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteEducation3D(${edu.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white; margin-bottom: 5px;">${edu.degree}</h4>
+                    <p style="color: #a0a0b0; font-size: 13px;">${edu.institution}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderHardSkillsList3D() {
+            const container = document.getElementById('hard-skills-list-3d');
+            container.innerHTML = cvData3D.hardSkills.map(skill => `
+                <div class="item-card-3d">
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editHardSkill3D(${skill.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateHardSkill3D(${skill.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteHardSkill3D(${skill.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white;"><i class="${skill.icon}"></i> ${skill.name} (${skill.level}%)</h4>
+                </div>
+            `).join('');
+        }
+
+        function renderSoftSkillsList3D() {
+            const container = document.getElementById('soft-skills-list-3d');
+            container.innerHTML = cvData3D.softSkills.map(skill => `
+                <div class="item-card-3d">
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editSoftSkill3D(${skill.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateSoftSkill3D(${skill.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteSoftSkill3D(${skill.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white;"><i class="fas fa-user-check"></i> ${skill.name} (${skill.level}%)</h4>
+                </div>
+            `).join('');
+        }
+
+        function renderToolsList3D() {
+            const container = document.getElementById('tools-list-3d');
+            container.innerHTML = cvData3D.tools.map(tool => `
+                <div class="item-card-3d">
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editTool3D(${tool.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateTool3D(${tool.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteTool3D(${tool.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white;"><i class="${tool.icon}"></i> ${tool.name}</h4>
+                </div>
+            `).join('');
+        }
+
+        function renderCertificationList3D() {
+            const container = document.getElementById('certification-list-3d');
+            container.innerHTML = cvData3D.certifications.map(cert => `
+                <div class="item-card-3d">
+                    <span class="item-stamp-3d">${cert.year}</span>
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editCertification3D(${cert.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateCertification3D(${cert.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteCertification3D(${cert.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white; margin-bottom: 5px;">${cert.name}</h4>
+                    <p style="color: #a0a0b0; font-size: 12px;">${cert.issuer}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderLanguageList3D() {
+            const container = document.getElementById('language-list-3d');
+            container.innerHTML = cvData3D.languages.map(lang => `
+                <div class="item-card-3d">
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editLanguage3D(${lang.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateLanguage3D(${lang.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteLanguage3D(${lang.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white;"><i class="fas fa-language"></i> ${lang.name} - ${lang.level}</h4>
+                </div>
+            `).join('');
+        }
+
+        function renderInterestList3D() {
+            const container = document.getElementById('interest-list-3d');
+            container.innerHTML = cvData3D.interests.map(interest => `
+                <div class="item-card-3d">
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editInterest3D(${interest.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateInterest3D(${interest.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteInterest3D(${interest.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white;"><i class="${interest.icon}"></i> ${interest.text}</h4>
+                </div>
+            `).join('');
+        }
+
+        function renderAwardList3D() {
+            const container = document.getElementById('award-list-3d');
+            container.innerHTML = cvData3D.awards.map(award => `
+                <div class="item-card-3d">
+                    <span class="item-stamp-3d">${award.year}</span>
+                    <div class="item-tools-3d">
+                        <button class="item-btn-3d btn-edit-3d" onclick="editAward3D(${award.id})"><i class="fas fa-edit"></i></button>
+                        <button class="item-btn-3d btn-copy-3d" onclick="duplicateAward3D(${award.id})"><i class="fas fa-copy"></i></button>
+                        <button class="item-btn-3d btn-delete-3d" onclick="deleteAward3D(${award.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 style="color: white; margin-bottom: 5px;">${award.name}</h4>
+                    <p style="color: #a0a0b0; font-size: 12px;">${award.issuer}</p>
+                </div>
+            `).join('');
+        }
+
+        function updatePreview3D() {
+            const cvContent = document.getElementById('cvContent3D');
+            const primary = document.getElementById('primaryColor3D').value;
+            const secondary = document.getElementById('secondaryColor3D').value;
+            const bg = document.getElementById('bgColor3D').value;
+
+            const photoHTML = photoData3D ? 
+                `<img src="${photoData3D}" alt="Profile Photo">` : 
+                `<i class="fas fa-user-astronaut"></i>`;
+
+            let templateHTML = '';
+
+            if (currentTemplate3D === 17) {
+                // Template 3D Card Stack (UNIQUE!)
+                templateHTML = `
+                    <div class="template-3d-stack print-ready" style="--primary: ${primary}; --secondary: ${secondary}; --bg: ${bg};">
+                        <div class="stack-container">
+                            <div class="stack-layer-1" style="background: ${primary};"></div>
+                            <div class="stack-layer-2" style="background: linear-gradient(135deg, ${primary}, ${secondary});"></div>
+                            <div class="stack-layer-3" style="background: ${bg};">
+                                <!-- Header dengan 3D Photo -->
+                                <div class="stack-header">
+                                    <div class="stack-photo">
+                                        ${photoHTML}
+                                    </div>
+                                    <div class="stack-title">
+                                        <h1 class="stack-name">${cvData3D.personal.name}</h1>
+                                        <h3 class="stack-profesi">${cvData3D.personal.profesi}</h3>
+                                    </div>
+                                </div>
+
+                                <!-- Contact Cards 3D -->
+                                <div class="stack-contact">
+                                    <div class="contact-card-3d">
+                                        <i class="fas fa-phone"></i>
+                                        <span>${cvData3D.personal.phone}</span>
+                                    </div>
+                                    <div class="contact-card-3d">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>${cvData3D.personal.email}</span>
+                                    </div>
+                                    <div class="contact-card-3d">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${cvData3D.personal.location}</span>
+                                    </div>
+                                    <div class="contact-card-3d">
+                                        <i class="fas fa-globe"></i>
+                                        <span>${cvData3D.personal.website}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Main Grid -->
+                                <div class="stack-grid">
+                                    <!-- Left Column -->
+                                    <div class="stack-left">
+                                        <!-- Summary Card -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-user-astronaut"></i> About Me
+                                            </div>
+                                            <p style="font-size: 13px; line-height: 1.6; color: #334155;">${cvData3D.summary}</p>
+                                        </div>
+
+                                        <!-- Hard Skills Card -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-cube"></i> Hard Skills
+                                            </div>
+                                            ${cvData3D.hardSkills.map(skill => `
+                                                <div class="skill-3d-item">
+                                                    <div class="skill-3d-header">
+                                                        <span><i class="${skill.icon}"></i> ${skill.name}</span>
+                                                        <span>${skill.level}%</span>
+                                                    </div>
+                                                    <div class="skill-3d-bar-container">
+                                                        <div class="skill-3d-bar" style="width: ${skill.level}%;"></div>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+
+                                        <!-- Soft Skills Card -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-heart"></i> Soft Skills
+                                            </div>
+                                            ${cvData3D.softSkills.map(skill => `
+                                                <div class="skill-3d-item">
+                                                    <div class="skill-3d-header">
+                                                        <span>${skill.name}</span>
+                                                        <span>${skill.level}%</span>
+                                                    </div>
+                                                    <div class="skill-3d-bar-container">
+                                                        <div class="skill-3d-bar" style="width: ${skill.level}%; background: linear-gradient(90deg, ${secondary}, ${primary});"></div>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+
+                                        <!-- Tools Card -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-tools"></i> Tools
+                                            </div>
+                                            <div class="cert-stack">
+                                                ${cvData3D.tools.map(tool => `
+                                                    <span class="cert-3d"><i class="${tool.icon}"></i> ${tool.name}</span>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+
+                                        <!-- Languages Card -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-language"></i> Languages
+                                            </div>
+                                            <div>
+                                                ${cvData3D.languages.map(lang => `
+                                                    <span class="lang-3d"><strong>${lang.name}</strong> <span style="color: ${primary};">${lang.level}</span></span>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Column -->
+                                    <div class="stack-right">
+                                        <!-- Experience Timeline -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-briefcase"></i> Experience
+                                            </div>
+                                            ${cvData3D.experiences.map(exp => `
+                                                <div class="timeline-3d-item">
+                                                    <div class="timeline-3d-date">${exp.startDate} - ${exp.endDate}</div>
+                                                    <div class="timeline-3d-title">${exp.title}</div>
+                                                    <div class="timeline-3d-subtitle">${exp.company}</div>
+                                                    <div class="timeline-3d-desc">${exp.description}</div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+
+                                        <!-- Education Timeline -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-graduation-cap"></i> Education
+                                            </div>
+                                            ${cvData3D.educations.map(edu => `
+                                                <div class="timeline-3d-item">
+                                                    <div class="timeline-3d-date">${edu.graduationYear}</div>
+                                                    <div class="timeline-3d-title">${edu.degree}</div>
+                                                    <div class="timeline-3d-subtitle">${edu.institution}</div>
+                                                    ${edu.gpa && parseFloat(edu.gpa) >= 3.0 ? `<div style="color: ${primary}; font-size: 12px;">GPA: ${edu.gpa}</div>` : ''}
+                                                </div>
+                                            `).join('')}
+                                        </div>
+
+                                        <!-- Certifications & Awards -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-certificate"></i> Certifications
+                                            </div>
+                                            <div class="cert-stack">
+                                                ${cvData3D.certifications.map(cert => `
+                                                    <span class="cert-3d"><i class="fas fa-certificate"></i> ${cert.name}</span>
+                                                `).join('')}
+                                            </div>
+                                            
+                                            <div style="margin-top: 20px;">
+                                                <div class="stack-card-title">
+                                                    <i class="fas fa-trophy"></i> Awards
+                                                </div>
+                                                ${cvData3D.awards.map(award => `
+                                                    <div class="award-3d">
+                                                        <strong>${award.name}</strong>
+                                                        <span style="float: right; font-size: 11px;">${award.year}</span>
+                                                        <br><small>${award.issuer}</small>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+
+                                        <!-- Interests -->
+                                        <div class="stack-card">
+                                            <div class="stack-card-title">
+                                                <i class="fas fa-heart"></i> Interests
+                                            </div>
+                                            <div>
+                                                ${cvData3D.interests.map(interest => `
+                                                    <span class="interest-3d"><i class="${interest.icon}"></i> ${interest.text}</span>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            cvContent.innerHTML = templateHTML;
+        }
+
+        function saveCV3D() {
+            const fileName = `${cvData3D.personal.name.replace(/\s+/g, '_')}_CV.json`;
+            const dataStr = JSON.stringify(cvData3D, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            alert('CV saved successfully!');
+        }
+
+        function printCV3D() {
+            window.print();
+        }
+
+        // Initial render
+        renderExperienceList3D();
+        renderEducationList3D();
+        renderHardSkillsList3D();
+        renderSoftSkillsList3D();
+        renderToolsList3D();
+        renderCertificationList3D();
+        renderLanguageList3D();
+        renderInterestList3D();
+        renderAwardList3D();
+        updatePreview3D();
+    </script>
+</body>
+</html>
